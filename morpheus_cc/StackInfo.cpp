@@ -1,3 +1,15 @@
+/****************************************************************************************
+ * Copyright (c) Bathla [bathla.tech@gmail.com] All Rights Reserved.
+ * Licensed under Apache License 2
+ *
+ * File: StackInfo.cpp
+ *
+ * Description:
+ *	
+ *
+ *
+ ***************************************************************************************/
+
 #include "StdAfx.h"
 #include "Slogger.h"
 #include "Stackinfo.h"

@@ -1,4 +1,14 @@
-
+/****************************************************************************************
+ * Copyright (c) Bathla [bathla.tech@gmail.com] All Rights Reserved.
+ * Licensed under Apache License 2
+ *
+ * File: Morpheus.h
+ *
+ * Description:
+ *	
+ *
+ *
+ ***************************************************************************************/
 
 /* this ALWAYS GENERATED file contains the definitions for the interfaces */
 

@@ -1,3 +1,19 @@
+﻿/****************************************************************************************
+ * Copyright (c) Bathla [bathla.tech@gmail.com] All Rights Reserved.
+ * Licensed under Apache License 2
+ *
+ * File: Slogger.h
+ *
+ * Description:
+ *	
+ *
+ *
+ ***************************************************************************************/
+
+
+
+
+
 // Slogger.h : Declaration of the CSlogger
 
 #pragma once

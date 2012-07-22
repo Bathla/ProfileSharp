@@ -1,3 +1,15 @@
+/****************************************************************************************
+ * Copyright (c) Bathla [bathla.tech@gmail.com] All Rights Reserved.
+ * Licensed under Apache License 2
+ *
+ * File: Morpheus.cpp
+ *
+ * Description:
+ *	
+ *
+ *
+ ***************************************************************************************/
+
 // Morpheus.cpp : Implementation of DLL Exports.
 
 #include "stdafx.h"
