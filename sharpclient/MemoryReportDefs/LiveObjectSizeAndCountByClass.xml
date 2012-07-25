@@ -1,0 +1,60 @@
+<Schema>
+	<SearchCriteria Value="Analyze Object Size and Count grouped by Object-Class">		
+		<ReportCondition ID="Object-Count">
+			<Entity Name="Object-Count" Mapsto="[Object-Count]" DataType="Number">
+				<Conditions>
+					<Condition Value="&gt;=" Show="greater than or equal to">
+						<Domain Type="TextBox"></Domain>
+					</Condition>					
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ReportCondition ID="Collective-Size">
+			<Entity Name="Collective-Size" Mapsto="[Collective-Size]" DataType="Number">
+				<Conditions>
+					<Condition Value="&gt;=" Show="greater than or equal to">
+						<Domain Type="TextBox"></Domain>
+					</Condition>	
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ReportCondition ID="Object-Class">
+			<Entity Name="Object-Class" Mapsto="[LiveObjects.ObjectName]" DataType="String">
+				<Conditions>
+					<Condition Value="=" Show="equals">
+						<Domain Type="TextBox"></Domain>
+					</Condition>
+					<Condition Value="Like" Show="Contains">
+						<Domain Type="TextBox" Key="%%">				
+						</Domain>
+					</Condition>
+					<Condition Value="Like" Show="Begins With">
+						<Domain Type="TextBox" Key="%">		
+						</Domain>
+					</Condition>
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ReportCondition ID="SessionID">
+			<Entity Name="SessionID" Mapsto="[LiveObjects.SessionID]" DataType="String">
+				<Conditions>
+					<Condition Value="=" Show="is">
+						<Domain Type="TextBox" Fixed="True"></Domain>
+					</Condition>
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ResultSet BindTo="LiveObjects">
+			<MasterSet TableName="LiveObjects">
+SELECT * FROM(
+	SELECT [LiveObjects.ObjectName] as [Object-Class],
+	SUM([LiveObjects.ObjectCount]) as [Object-Count],	
+	SUM([LiveObjects.ObjectSize]) as [Collective-Size],[LiveObjects.SessionID] as [SessionID] 
+	FROM LiveObjects WHERE ({SessionID}) and ({Object-Class}) 
+	group by [LiveObjects.SessionID],[LiveObjects.ObjectName]	
+)
+	WHERE ({Object-Count}) and ({Collective-Size}) 
+</MasterSet>
+		</ResultSet>
+	</SearchCriteria>
+</Schema>

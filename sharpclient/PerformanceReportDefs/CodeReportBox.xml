@@ -1,0 +1,62 @@
+<Schema>
+	<SearchCriteria Value="Analyze Code by Hit-Count and Percent Time-Consumption">
+		<ReportCondition ID="Hit Count">
+			<Entity Name="Hit Count" Mapsto="[Hit Count]" DataType="Number">
+				<Conditions>
+					<Condition Value="&gt;=" Show="greater than or equal to">
+						<Domain Type="TextBox"></Domain>
+					</Condition>					
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ReportCondition ID="Time Consumed(%)">
+			<Entity Name="Time Consumed(%)" Mapsto="[Time Consumed(%)]" DataType="Number">
+				<Conditions>
+					<Condition Value="&gt;=" Show="greater than or equal to">
+						<Domain Type="TextBox"></Domain>
+					</Condition>	
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ReportCondition ID="Source File">
+			<Entity Name="Source File" Mapsto="[DebugCode.FileName]" DataType="String">
+				<Conditions>
+					<Condition Value="=" Show="is">
+						<Domain Type="ComboBox">
+				<Query>Select distinct FileName from DebugCode where SessionID={SessionID} and Len(FileName)>1</Query>	
+						</Domain>
+					</Condition>					
+					<Condition Value="Like" Show="Contains">
+						<Domain Type="TextBox" Key="%%">				
+						</Domain>
+					</Condition>
+					<Condition Value="Like" Show="Begins With">
+						<Domain Type="TextBox" Key="%">		
+						</Domain>
+					</Condition>
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ReportCondition ID="SessionID">
+			<Entity Name="SessionID" Mapsto="[Functions.SessionID]" DataType="String">
+				<Conditions>
+					<Condition Value="=" Show="is">
+						<Domain Type="TextBox" Fixed="True"></Domain>
+					</Condition>
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ResultSet BindTo="Functions">
+			<MasterSet TableName="Functions">Select FunctionID,Function,[Time Consumed(units)],
+ [Hit Count],[Time Consumed(%)],[SessionID],[DebugCode.FileName] as [Source File]  From
+ (SELECT [FTable.FunctionID] AS [FunctionID], CStr([FTable.FSignature]) AS [Function], 
+ Sum([FTable.CollectiveTime]) AS [Time Consumed(units)], Sum([FTable.Calls]) AS [Hit Count], 
+ Sum([FTable.CollectiveTime])*100/(Select Sum(Functions.CollectiveTime)+1 from FTable Functions WHERE ({SessionID})  )
+ AS [Time Consumed(%)], [FTable.SessionID] AS [SessionID] FROM FTable 
+ GROUP BY [FunctionID], CStr([FTable.FSignature]),[FTable.SessionID] 
+) as Functions,DebugCode where [Functions.FunctionID]=[DebugCode.FunctionID] and [Functions.SessionID]= [DebugCode.SessionID]
+ and ({Hit Count}) and ({Time Consumed(%)}) and ({Source File}) and ({SessionID}) group by FunctionID,Function,[Time Consumed(units)],[Hit Count],[Time Consumed(%)],[SessionID],[DebugCode.FileName] 
+</MasterSet>
+		</ResultSet>
+	</SearchCriteria>
+</Schema>

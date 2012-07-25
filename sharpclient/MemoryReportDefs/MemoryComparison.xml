@@ -1,0 +1,281 @@
+<Schema>	
+	<SearchCriteria Value="Compare Memory by Objects Referenced (if any)">
+		<ReportCondition ID="ObjectID">
+			<Entity Name="ObjectID" Mapsto="[Numerator.ObjectID]" DataType="String">
+				<Conditions>
+					<Condition Value="=" Show="is">
+						<Domain Type="TextBox"></Domain>
+					</Condition>
+				</Conditions>
+			</Entity>
+		</ReportCondition>		
+		<ReportCondition ID="Object Size">
+			<Entity Name="Object Size" Mapsto="[Numerator.ObjectSize]" DataType="Number">
+				<Conditions>
+					<Condition Value="&gt;=" Show="greater than or equal to">
+						<Domain Type="TextBox"></Domain>
+					</Condition>	
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ReportCondition ID="Object-Class">
+			<Entity Name="Object-Class" Mapsto="[Numerator.ObjectName]" DataType="String">
+				<Conditions>
+					<Condition Value="=" Show="equals">
+						<Domain Type="TextBox"></Domain>
+					</Condition>
+					<Condition Value="Like" Show="Contains">
+						<Domain Type="TextBox" Key="%%">				
+						</Domain>
+					</Condition>
+					<Condition Value="Like" Show="Begins With">
+						<Domain Type="TextBox" Key="%">		
+						</Domain>
+					</Condition>
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ReportCondition ID="Numerator-SessionID">
+			<Entity Name="Numerator-SessionID" Mapsto="Numerator.SessionID" DataType="String">
+				<Conditions>
+					<Condition Value="=" Show="is">
+						<Domain Type="TextBox" Fixed="True"></Domain>
+					</Condition>
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ReportCondition ID="Denominator-SessionID">
+			<Entity Name="Denominator-SessionID" Mapsto="Denominator.SessionID" DataType="String">
+				<Conditions>
+					<Condition Value="=" Show="is">
+						<Domain Type="TextBox" Fixed="True"></Domain>
+					</Condition>
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ResultSet BindTo="Numerator">
+			<MasterSet TableName="Numerator">
+	SELECT [Numerator.ObjectID] as [ObjectID],
+	[Numerator.ObjectName] as [Object-Class],
+	[Numerator.ObjectSize] as [Object Size(Bytes)],	
+	[Numerator.IsRootObject] as [Root Object],[Numerator.SessionID] as [SessionID]	
+	FROM LiveObjects Numerator WHERE ({ObjectID}) and ({Numerator-SessionID}) and 
+	({Object Size}) and({Object-Class})and ([Numerator.ObjectID])  in 
+	(
+	Select distinct [Numerator.ObjectID] from LiveObjects Numerator 
+	left outer join LiveObjects Denominator on  (Numerator.ObjectID = Denominator.ObjectID and ({Numerator-SessionID}) and ({Denominator-SessionID})  )
+	Where [Denominator.ObjectID] is null
+	)	
+</MasterSet>
+		</ResultSet>
+	</SearchCriteria>
+	<SearchCriteria Value="Compare Memory by Objects Referencing (if any)">
+		<ReportCondition ID="ObjectID">
+			<Entity Name="ObjectID" Mapsto="[Numerator.RefObjectID]" DataType="String">
+				<Conditions>
+					<Condition Value="=" Show="is">
+						<Domain Type="TextBox"></Domain>
+					</Condition>
+				</Conditions>
+			</Entity>
+		</ReportCondition>		
+		<ReportCondition ID="Object Size">
+			<Entity Name="Object Size" Mapsto="[Numerator.RefObjectSize]" DataType="Number">
+				<Conditions>
+					<Condition Value="&gt;=" Show="greater than or equal to">
+						<Domain Type="TextBox"></Domain>
+					</Condition>	
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ReportCondition ID="Object-Class">
+			<Entity Name="Object-Class" Mapsto="[Numerator.RefObjectName]" DataType="String">
+				<Conditions>
+					<Condition Value="=" Show="equals">
+						<Domain Type="TextBox"></Domain>
+					</Condition>
+					<Condition Value="Like" Show="Contains">
+						<Domain Type="TextBox" Key="%%">				
+						</Domain>
+					</Condition>
+					<Condition Value="Like" Show="Begins With">
+						<Domain Type="TextBox" Key="%">		
+						</Domain>
+					</Condition>
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ReportCondition ID="Numerator-SessionID">
+			<Entity Name="Numerator-SessionID" Mapsto="Numerator.SessionID" DataType="String">
+				<Conditions>
+					<Condition Value="=" Show="is">
+						<Domain Type="TextBox" Fixed="True"></Domain>
+					</Condition>
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ReportCondition ID="Denominator-SessionID">
+			<Entity Name="Denominator-SessionID" Mapsto="Denominator.SessionID" DataType="String">
+				<Conditions>
+					<Condition Value="=" Show="is">
+						<Domain Type="TextBox" Fixed="True"></Domain>
+					</Condition>
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ResultSet BindTo="Numerator">
+			<MasterSet TableName="Numerator">
+	SELECT distinct [Numerator.RefObjectID] as [ObjectID],
+	[Numerator.RefObjectName] as [Object-Class],	
+	[Numerator.RefObjectSize] as [Object Size(Bytes)],	
+	[Numerator.SessionID] as [SessionID] 
+	FROM RefObjects Numerator WHERE ({ObjectID}) and ({Numerator-SessionID}) and 
+	({Object Size}) and({Object-Class}) and ([Numerator.RefObjectID] &lt;&gt; [Numerator.ParentObjectID])
+	and ([Numerator.RefObjectID]) in 
+	(
+	Select distinct [Numerator.ObjectID] from LiveObjects Numerator 
+	left outer join LiveObjects Denominator on  (Numerator.ObjectID = Denominator.ObjectID and ({Numerator-SessionID}) and ({Denominator-SessionID})  )
+	Where [Denominator.ObjectID] is null
+	)	
+</MasterSet>
+		</ResultSet>
+	</SearchCriteria>
+<SearchCriteria Value="Compare Memory by Object allocation">
+		<ReportCondition ID="Numerator-SessionID">
+			<Entity Name="Numerator-SessionID" Mapsto="Numerator.SessionID" DataType="String">
+				<Conditions>
+					<Condition Value="=" Show="is">
+						<Domain Type="TextBox" Fixed="True"></Domain>
+					</Condition>
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ReportCondition ID="Denominator-SessionID">
+			<Entity Name="Denominator-SessionID" Mapsto="Denominator.SessionID" DataType="String">
+				<Conditions>
+					<Condition Value="=" Show="is">
+						<Domain Type="TextBox" Fixed="True"></Domain>
+					</Condition>
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ReportCondition ID="ObjectID">
+			<Entity Name="ObjectID" Mapsto="[Numerator.ObjectID]" DataType="String">
+				<Conditions>
+					<Condition Value="=" Show="is">
+						<Domain Type="TextBox"></Domain>
+					</Condition>
+				</Conditions>
+			</Entity>
+		</ReportCondition>		
+		<ReportCondition ID="Object Size">
+			<Entity Name="Object Size" Mapsto="[Numerator.ObjectSize]" DataType="Number">
+				<Conditions>
+					<Condition Value="&gt;=" Show="greater than or equal to">
+						<Domain Type="TextBox"></Domain>
+					</Condition>	
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ReportCondition ID="Object-Class">
+			<Entity Name="Object-Class" Mapsto="[Numerator.ObjectName]" DataType="String">
+				<Conditions>
+					<Condition Value="=" Show="equals">
+						<Domain Type="TextBox"></Domain>
+					</Condition>
+					<Condition Value="Like" Show="Contains">
+						<Domain Type="TextBox" Key="%%">				
+						</Domain>
+					</Condition>
+					<Condition Value="Like" Show="Begins With">
+						<Domain Type="TextBox" Key="%">		
+						</Domain>
+					</Condition>
+				</Conditions>
+			</Entity>
+		</ReportCondition>		
+		<ReportCondition ID="Thread ID">
+			<Entity Name="Thread ID" Mapsto="[ObjectAllocation.ThreadID]" DataType="String">
+				<Conditions>
+					<Condition Value="=" Show="is">
+						<Domain Type="ComboBox">
+				<Query>Select distinct ThreadID from ObjectAllocation where SessionID={Numerator-SessionID}</Query>	
+						</Domain>
+				</Condition>
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ReportCondition ID="Object Age">
+			<Entity Name="Object Age" Mapsto="[ObjectAllocation.ObjectAge]" DataType="Number">
+				<Conditions>
+					<Condition Value="&gt;=" Show="greater than or equal to">
+						<Domain Type="ComboBox">
+				<Query>Select distinct ObjectAge from ObjectAllocation where SessionID={Numerator-SessionID}</Query>	
+						</Domain>
+					</Condition>
+					<Condition Value="=" Show="is equal to">
+						<Domain Type="ListBox">
+				<Query>Select distinct ObjectAge from ObjectAllocation where SessionID={Numerator-SessionID}</Query>	
+						</Domain>
+					</Condition>		
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ReportCondition ID="Object Generation">
+			<Entity Name="Object Generation" Mapsto="[ObjectAllocation.ObjectGeneration]" DataType="String">
+				<Conditions>
+					<Condition Value="&gt;=" Show="greater than or equal to">
+						<Domain Type="ComboBox">
+				<Query>Select distinct ObjectGeneration from ObjectAllocation where SessionID={Numerator-SessionID} order by ObjectGeneration</Query>	
+						</Domain>
+					</Condition>
+					<Condition Value="=" Show="is equal to">
+						<Domain Type="ComboBox">
+				<Query>Select distinct ObjectGeneration from ObjectAllocation where SessionID={Numerator-SessionID} order by ObjectGeneration</Query>
+						</Domain>
+					</Condition>
+				</Conditions>
+			</Entity>
+		</ReportCondition>					
+		<ReportCondition ID="Allocating-Function">
+			<Entity Name="Allocating-Function" Mapsto="[AllocationFunction.AllocFunctionName]" DataType="String">
+				<Conditions>
+					<Condition Value="=" Show="equals">
+						<Domain Type="TextBox"></Domain>
+					</Condition>
+					<Condition Value="Like" Show="Contains">
+						<Domain Type="TextBox" Key="%%">				
+						</Domain>
+					</Condition>
+					<Condition Value="Like" Show="Begins With">
+						<Domain Type="TextBox" Key="%">		
+						</Domain>
+					</Condition>
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ResultSet BindTo="Numerator">
+			<MasterSet TableName="Numerator">
+	SELECT [Numerator.ObjectID] as [ObjectID],
+	[Numerator.ObjectName] as [Object-Class],	
+	[Numerator.ObjectSize] as [Object Size(Bytes)],	
+	[AllocationFunction.AllocFunctionName] as [Allocating-Function],
+	[ObjectAllocation.ThreadId] as [Thread ID],
+	[ObjectAllocation.ObjectAge] as [Object Age],
+	[ObjectAllocation.ObjectGeneration] as [Object Generation],	
+	[Numerator.IsRootObject] as [Root Object],[Numerator.SessionID] as [SessionID]		
+	FROM LiveObjects Numerator,ObjectAllocation,AllocationFunction  WHERE ({ObjectID}) and ({Numerator-SessionID}) and 
+	({Object Size}) and({Object-Class}) and ({Thread ID}) and ({Allocating-Function})  and ({Object Age}) and ({Object Generation}) and 		([Numerator.SessionID]=[ObjectAllocation.SessionID])
+	and ([Numerator.ObjectID]=[ObjectAllocation.ObjectID]) 
+	and ([ObjectAllocation.SessionID]=[AllocationFunction.SessionID]) and 
+	([ObjectAllocation.AllocFunctionID]=[AllocationFunction.AllocFunctionID]) and 
+	([Numerator.ObjectID]) in 
+	(
+	Select distinct [Numerator.ObjectID] from LiveObjects Numerator 
+	left outer join LiveObjects Denominator on  (Numerator.ObjectID = Denominator.ObjectID and ({Numerator-SessionID}) and ({Denominator-SessionID})  )
+	Where [Denominator.ObjectID] is null
+	)
+			</MasterSet>
+		</ResultSet>
+	</SearchCriteria>
+</Schema>

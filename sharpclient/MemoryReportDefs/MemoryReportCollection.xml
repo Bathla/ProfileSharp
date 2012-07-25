@@ -1,0 +1,12 @@
+<Reports>
+<Report Name="LiveObjectSizeAndCount" HelpString="Analyze In-Memory Objects (individually)" Group="Memory Analysis(Objects)">
+</Report>
+<Report Name="LiveObjectSizeAndCountByClass" HelpString="Analyze In-Memory Objects (grouped by Object-Class)" Group="Memory Analysis(Objects)">
+</Report>
+<Report Name="ReferencedObjects" HelpString="Analyze In-Memory Referenced Objects" Group="Memory Analysis(Object-References)">
+</Report>
+<Report Name="ReferencingObjects" HelpString="Analyze In-Memory Referencing Objects" Group="Memory Analysis(Object-References)">
+</Report>
+<Report Name="ObjectAllocation" HelpString="Analyze Objects by allocation" Group="Memory Analysis(Object-Allocation)">
+</Report>
+</Reports>

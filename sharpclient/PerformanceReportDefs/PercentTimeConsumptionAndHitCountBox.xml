@@ -1,0 +1,44 @@
+<Schema>
+	<SearchCriteria Value="Analyze Performance by Hit-Count and Percent Time-Consumption">
+		<ReportCondition ID="Hit Count">
+			<Entity Name="Hit Count" Mapsto="[Functions.Calls]" DataType="Number">
+				<Conditions>
+					<Condition Value="&gt;=" Show="greater than or equal to">
+						<Domain Type="TextBox"></Domain>
+					</Condition>					
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ReportCondition ID="Time Consumed(%)">
+			<Entity Name="Time Consumed(%)" Mapsto="[Time Consumed(%)]" DataType="Number">
+				<Conditions>
+					<Condition Value="&gt;=" Show="greater than or equal to">
+						<Domain Type="TextBox"></Domain>
+					</Condition>	
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ReportCondition ID="SessionID">
+			<Entity Name="SessionID" Mapsto="[Functions.SessionID]" DataType="String">
+				<Conditions>
+					<Condition Value="=" Show="is">
+						<Domain Type="TextBox" Fixed="True"></Domain>
+					</Condition>
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ResultSet BindTo="Functions">
+			<MasterSet TableName="Functions">SELECT * FROM 
+	(SELECT [Functions.FunctionID] as [FunctionID],
+	CStr([Functions.FSignature]) as [Function],
+	[Functions.CollectiveTime] as [Time Consumed(units)], 
+	[Functions.Calls] AS [Hit Count],
+	[Functions.CollectiveTime]*100/(Select Sum(CollectiveTime)+1 from FTable Functions WHERE ({SessionID})) as [Time Consumed(%)],
+	[Functions.SessionID] as [SessionID] 
+	 FROM FTable Functions WHERE ({Hit Count}) and ({SessionID})
+	 )
+	 WHERE {Time Consumed(%)} ORDER BY [Time Consumed(%)] desc
+</MasterSet>
+		</ResultSet>
+	</SearchCriteria>
+</Schema>

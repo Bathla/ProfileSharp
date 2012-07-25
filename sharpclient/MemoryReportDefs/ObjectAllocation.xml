@@ -1,0 +1,125 @@
+<Schema>
+	<SearchCriteria Value="Analyze Memory by Object allocation">
+		<ReportCondition ID="SessionID">
+			<Entity Name="SessionID" Mapsto="[LiveObjects.SessionID]" DataType="String">
+				<Conditions>
+					<Condition Value="=" Show="is">
+						<Domain Type="TextBox" Fixed="True"></Domain>
+					</Condition>
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ReportCondition ID="ObjectID">
+			<Entity Name="ObjectID" Mapsto="[LiveObjects.ObjectID]" DataType="String">
+				<Conditions>
+					<Condition Value="=" Show="is">
+						<Domain Type="TextBox"></Domain>
+					</Condition>
+				</Conditions>
+			</Entity>
+		</ReportCondition>		
+		<ReportCondition ID="Object Size">
+			<Entity Name="Object Size" Mapsto="[LiveObjects.ObjectSize]" DataType="Number">
+				<Conditions>
+					<Condition Value="&gt;=" Show="greater than or equal to">
+						<Domain Type="TextBox"></Domain>
+					</Condition>	
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ReportCondition ID="Object Age">
+			<Entity Name="Object Age" Mapsto="[ObjectAllocation.ObjectAge]" DataType="Number">
+				<Conditions>
+					<Condition Value="&gt;=" Show="greater than or equal to">
+						<Domain Type="ComboBox">
+				<Query>Select distinct ObjectAge from ObjectAllocation where SessionID={SessionID}</Query>	
+						</Domain>
+					</Condition>
+					<Condition Value="=" Show="is equal to">
+						<Domain Type="ListBox">
+				<Query>Select distinct ObjectAge from ObjectAllocation where SessionID={SessionID}</Query>	
+						</Domain>
+					</Condition>						
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ReportCondition ID="Object Generation">
+			<Entity Name="Object Generation" Mapsto="[ObjectAllocation.ObjectGeneration]" DataType="String">
+				<Conditions>
+					<Condition Value="&gt;=" Show="greater than or equal to">
+						<Domain Type="ComboBox">
+				<Query>Select distinct ObjectGeneration from ObjectAllocation where SessionID={SessionID} order by ObjectGeneration</Query>	
+						</Domain>
+					</Condition>	
+					<Condition Value="=" Show="is equal to">
+						<Domain Type="ComboBox">
+				<Query>Select distinct ObjectGeneration from ObjectAllocation where SessionID={SessionID} order by ObjectGeneration</Query>	
+						</Domain>
+					</Condition>	
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ReportCondition ID="Object-Class">
+			<Entity Name="Object-Class" Mapsto="[LiveObjects.ObjectName]" DataType="String">
+				<Conditions>
+					<Condition Value="=" Show="equals">
+						<Domain Type="TextBox"></Domain>
+					</Condition>
+					<Condition Value="Like" Show="Contains">
+						<Domain Type="TextBox" Key="%%">				
+						</Domain>
+					</Condition>
+					<Condition Value="Like" Show="Begins With">
+						<Domain Type="TextBox" Key="%">		
+						</Domain>
+					</Condition>
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ReportCondition ID="Thread ID">
+			<Entity Name="Thread ID" Mapsto="[ObjectAllocation.ThreadID]" DataType="String">
+				<Conditions>
+					<Condition Value="=" Show="is">
+						<Domain Type="ComboBox">
+				<Query>Select distinct ThreadID from ObjectAllocation where SessionID={SessionID}</Query>	
+						</Domain>
+				</Condition>
+				</Conditions>
+			</Entity>
+		</ReportCondition>			
+		<ReportCondition ID="Allocating-Function">
+			<Entity Name="Allocating-Function" Mapsto="[AllocationFunction.AllocFunctionName]" DataType="String">
+				<Conditions>
+					<Condition Value="=" Show="equals">
+						<Domain Type="TextBox"></Domain>
+					</Condition>
+					<Condition Value="Like" Show="Contains">
+						<Domain Type="TextBox" Key="%%">				
+						</Domain>
+					</Condition>
+					<Condition Value="Like" Show="Begins With">
+						<Domain Type="TextBox" Key="%">		
+						</Domain>
+					</Condition>
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ResultSet BindTo="LiveObjects">
+			<MasterSet TableName="LiveObjects">
+	SELECT [LiveObjects.ObjectID] as [ObjectID],
+	[LiveObjects.ObjectName] as [Object-Class],
+	[AllocationFunction.AllocFunctionName] as [Allocating-Function],
+	[ObjectAllocation.ThreadId] as [Thread ID],	
+	[LiveObjects.ObjectSize] as [Object Size(Bytes)],	
+	[ObjectAllocation.ObjectAge] as [Object Age],
+	[ObjectAllocation.ObjectGeneration] as [Object Generation],	
+	[LiveObjects.IsRootObject] as [Root Object],[LiveObjects.SessionID] as [SessionID]		
+	FROM LiveObjects,ObjectAllocation,AllocationFunction WHERE ({ObjectID}) and ({SessionID}) and 
+	({Object Size}) and ({Object-Class}) and ({Thread ID}) and ({Allocating-Function}) and ({Object Age}) and ({Object Generation}) and 	([LiveObjects.SessionID]=[ObjectAllocation.SessionID])
+	and ([LiveObjects.ObjectID]=[ObjectAllocation.ObjectID]) 
+	and ([ObjectAllocation.SessionID]=[AllocationFunction.SessionID]) and 
+	([ObjectAllocation.AllocFunctionID]=[AllocationFunction.AllocFunctionID])	
+</MasterSet>
+		</ResultSet>
+	</SearchCriteria>
+</Schema>

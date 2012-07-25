@@ -1,0 +1,74 @@
+<Schema>
+	<SearchCriteria Value="Analyze Parent Functions">
+		<ReportCondition ID="FunctionID">
+			<Entity Name="FunctionID" Mapsto="[CalleeFunctions.CalleeFunctionID]" DataType="String">
+				<Conditions>
+					<Condition Value="=" Show="is">
+						<Domain Type="TextBox"></Domain>
+					</Condition>
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ReportCondition ID="Function Name">
+			<Entity Name="Function Name" Mapsto="CStr([CalleeFunctions.CFSignature])" DataType="String">
+				<Conditions>
+					<Condition Value="=" Show="equals">
+						<Domain Type="TextBox"></Domain>
+					</Condition>
+					<Condition Value="Like" Show="Contains">
+						<Domain Type="TextBox" Key="%%">				
+						</Domain>
+					</Condition>
+					<Condition Value="Like" Show="Begins With">
+						<Domain Type="TextBox" Key="%">		
+						</Domain>
+					</Condition>
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ReportCondition ID="Thread ID">
+			<Entity Name="Thread ID" Mapsto="[CalleeFunctions.CFThreadID]" DataType="String">
+				<Conditions>
+					<Condition Value="=" Show="is">
+						<Domain Type="ComboBox">
+				<Query>Select distinct CFThreadID from CFTable where SessionID={SessionID}</Query>	
+						</Domain>
+				</Condition>
+				</Conditions>
+			</Entity>
+		</ReportCondition>	
+		<ReportCondition ID="Hit Count">
+			<Entity Name="Hit Count" Mapsto="[CalleeFunctions.CFCalls]" DataType="Number">
+				<Conditions>
+					<Condition Value="&gt;=" Show="greater than or equal to">
+						<Domain Type="TextBox"></Domain>
+					</Condition>					
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ReportCondition ID="Time Consumed(%)">
+			<Entity Name="Time Consumed(%)" Mapsto="[Time Consumed(%)]" DataType="Number">
+				<Conditions>
+					<Condition Value="&gt;=" Show="greater than or equal to">
+						<Domain Type="TextBox"></Domain>
+					</Condition>	
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ReportCondition ID="SessionID">
+			<Entity Name="SessionID" Mapsto="[SessionID]" DataType="String">
+				<Conditions>
+					<Condition Value="=" Show="is">
+						<Domain Type="TextBox" Fixed="True"></Domain>
+					</Condition>
+				</Conditions>
+			</Entity>
+		</ReportCondition>	
+		<ResultSet BindTo="CalleeFunctions">
+			<MasterSet TableName="CalleeFunctions">SELECT * FROM(
+	SELECT [CalleeFunctions.CalleeFunctionID] as [FunctionID],CStr([CalleeFunctions.CFSignature]) as [Function Name],	
+	[CalleeFunctions.CFCalls] as [Hit Count],[CalleeFunctions.CFCollectiveTime]*100/(Select Sum([CFTable.CFCollectiveTime])+1 from CFTable where ({SessionID})) 
+	as [Time Consumed(%)],[CalleeFunctions.CFThreadID] as [Thread ID],[CalleeFunctions.CFCollectiveTime] as [Time Consumed(units)],[CalleeFunctions.CallerFunctionID] as [Parent-FunctionID],[CalleeFunctions.SessionID] as [SessionID] from CFTable CalleeFunctions WHERE ({FunctionID}) and ({SessionID}) and ({Thread ID}) and ({Hit Count}) and ({Function Name}) )  	where ({Time Consumed(%)})</MasterSet>	
+		</ResultSet>
+	</SearchCriteria>
+</Schema>

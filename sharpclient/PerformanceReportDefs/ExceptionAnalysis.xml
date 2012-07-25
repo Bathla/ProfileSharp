@@ -1,0 +1,85 @@
+<Schema>
+	<SearchCriteria Value="Analyze Exceptions by Functions">		
+		<ReportCondition ID="SessionID">
+			<Entity Name="SessionID" Mapsto="[Exceptions.SessionID]" DataType="String">
+				<Conditions>
+					<Condition Value="=" Show="is">
+						<Domain Type="TextBox" Fixed="True"></Domain>
+					</Condition>
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ReportCondition ID="Function Name">
+			<Entity Name="Function Name" Mapsto="CStr([Functions.FSignature])" DataType="String">
+				<Conditions>
+					<Condition Value="=" Show="is">
+						<Domain Type="TextBox"></Domain>
+					</Condition>
+					<Condition Value="Like" Show="contains">
+						<Domain Type="TextBox" Key="%%"></Domain>
+					</Condition>
+					<Condition Value="Like" Show="Begins with">
+						<Domain Type="TextBox" Key="%"></Domain>
+					</Condition>				
+				</Conditions>
+			</Entity>
+		</ReportCondition>			
+		<ReportCondition ID="Module Name">
+			<Entity Name="Module Name" Mapsto="[Functions.ModuleName]" DataType="String">
+				<Conditions>
+					<Condition Value="=" Show="is">
+						<Domain Type="TextBox"></Domain>
+					</Condition>
+					<Condition Value="Like" Show="contains">
+						<Domain Type="TextBox" Key="%%"></Domain>
+					</Condition>
+					<Condition Value="Like" Show="Begins with">
+						<Domain Type="TextBox" Key="%"></Domain>
+					</Condition>	
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ReportCondition ID="Exception Type">
+			<Entity Name="Exception Type" Mapsto="[Exceptions.ExceptionName]" DataType="String">
+				<Conditions>
+					<Condition Value="=" Show="is">
+					<Domain Type="ComboBox">
+							<Query>Select distinct ExceptionName from Exceptions where SessionID={SessionID}</Query>	
+					</Domain>
+					</Condition>		
+					<Condition Value="Like" Show="contains">
+						<Domain Type="TextBox" Key="%%"></Domain>
+					</Condition>
+					<Condition Value="Like" Show="Begins with">
+						<Domain Type="TextBox" Key="%"></Domain>
+					</Condition>						
+									
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ReportCondition ID="ThreadID">
+			<Entity Name="ThreadID" Mapsto="[Exceptions.ThreadID]" DataType="String">
+				<Conditions>
+					<Condition Value="=" Show="is">
+						<Domain Type="ComboBox">
+							<Query>Select distinct ThreadID from Exceptions where SessionID={SessionID}</Query>	
+						</Domain>
+					</Condition>									
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ResultSet BindTo="Exceptions">
+			<MasterSet TableName="Exceptions">Select [Exception Type],[Function Name],[Module],[ThreadID],
+				[SessionID],[ExceptionID],[FunctionID] from (
+				SELECT [Exceptions.ExceptionName] as [Exception Type],
+				[Exceptions.SessionID] as [SessionID],[Functions.ModuleName] as [Module],[Exceptions.ThreadID] as [ThreadID],
+				[Exceptions.ExceptionID] as [ExceptionID],[Exceptions.FunctionID] as [FunctionID],
+				[Functions.FSignature] as [Function Name] 
+				FROM Exceptions,FTable Functions where [Exceptions.FunctionID]=[Functions.FunctionID]
+				 and ({Exception Type}) and ({SessionID}) and ({Module Name}) and ({Function Name})  and ({ThreadID}) and 
+				 [Exceptions.SessionID]=[Functions.SessionID])
+				group by [Exception Type],[SessionID],[Module],[ExceptionID],[FunctionID],[Function Name],[ThreadID]
+			</MasterSet>
+		</ResultSet>
+	</SearchCriteria>
+</Schema>

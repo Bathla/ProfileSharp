@@ -1,0 +1,17 @@
+<Reports>
+<Report Name="PercentTimeConsumptionAndHitCountBox" HelpString="View % Time Consumption and Hit-Count" Group="Performance Analysis">
+</Report>
+<Report Name="CallerReportBox" HelpString="View Parent Function Information" Group="Performance Analysis">
+</Report>
+<Report Name="CalleeReportBox" HelpString="View Children Function Information" Group="Performance Analysis">
+</Report>
+<Report Name="CodeReportBox" HelpString="Analyze Overall Code Performance" Group="Code Analysis">
+</Report>
+<Report Name="ThreadAnalysis" HelpString="Analyze Performance by Threads and Modules" Group="Performance Analysis">
+</Report>
+<Report Name="ExceptionAnalysis" HelpString="Analyze Exceptions" Group="Exception Analysis">
+</Report>
+<Report Name="ThreadCodeAnalysis" HelpString="Analyze Code Performance by Individual Thread-IDs" Group="Code Analysis">
+</Report>
+</Reports>
+

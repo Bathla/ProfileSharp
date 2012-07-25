@@ -1,0 +1,116 @@
+<Schema>
+	<SearchCriteria Value="Analyze Memory by Object Size and Count">
+		<ReportCondition ID="ObjectID">
+			<Entity Name="ObjectID" Mapsto="[LiveObjects.ObjectID]" DataType="String">
+				<Conditions>
+					<Condition Value="=" Show="is">
+						<Domain Type="TextBox"></Domain>
+					</Condition>
+				</Conditions>
+			</Entity>
+		</ReportCondition>		
+		<ReportCondition ID="Object Size">
+			<Entity Name="Object Size" Mapsto="[LiveObjects.ObjectSize]" DataType="Number">
+				<Conditions>
+					<Condition Value="&gt;=" Show="greater than or equal to">
+						<Domain Type="TextBox"></Domain>
+					</Condition>	
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ReportCondition ID="Object-Class">
+			<Entity Name="Object-Class" Mapsto="[LiveObjects.ObjectName]" DataType="String">
+				<Conditions>
+					<Condition Value="=" Show="equals">
+						<Domain Type="TextBox"></Domain>
+					</Condition>
+					<Condition Value="Like" Show="Contains">
+						<Domain Type="TextBox" Key="%%">				
+						</Domain>
+					</Condition>
+					<Condition Value="Like" Show="Begins With">
+						<Domain Type="TextBox" Key="%">		
+						</Domain>
+					</Condition>
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ReportCondition ID="SessionID">
+			<Entity Name="SessionID" Mapsto="[LiveObjects.SessionID]" DataType="String">
+				<Conditions>
+					<Condition Value="=" Show="is">
+						<Domain Type="TextBox" Fixed="True"></Domain>
+					</Condition>
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ResultSet BindTo="LiveObjects">
+			<MasterSet TableName="LiveObjects">
+	SELECT [LiveObjects.ObjectID] as [ObjectID],
+	[LiveObjects.ObjectName] as [Object-Class],	
+	[LiveObjects.ObjectSize] as [Object Size(Bytes)],	
+	[LiveObjects.IsRootObject] as [Root Object],[LiveObjects.SessionID] as [SessionID]		
+	FROM LiveObjects WHERE ({ObjectID}) and ({SessionID}) and 
+	({Object Size}) and({Object-Class})
+</MasterSet>
+		</ResultSet>
+	</SearchCriteria>
+<SearchCriteria Value="Analyze Memory by Object Size(%)">
+		<ReportCondition ID="ObjectID">
+			<Entity Name="ObjectID" Mapsto="[LiveObjects.ObjectID]" DataType="String">
+				<Conditions>
+					<Condition Value="=" Show="is">
+						<Domain Type="TextBox"></Domain>
+					</Condition>
+				</Conditions>
+			</Entity>			
+		</ReportCondition>		
+		<ReportCondition ID="Object-Size(%)">
+			<Entity Name="Object-Size(%)" Mapsto="[Object-Size(%)]" DataType="Number">
+				<Conditions>
+					<Condition Value="&gt;=" Show="greater than or equal to">
+						<Domain Type="TextBox"></Domain>
+					</Condition>	
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ReportCondition ID="Object-Class">
+			<Entity Name="Object-Class" Mapsto="[LiveObjects.ObjectName]" DataType="String">
+				<Conditions>
+					<Condition Value="=" Show="equals">
+						<Domain Type="TextBox"></Domain>
+					</Condition>
+					<Condition Value="Like" Show="Contains">
+						<Domain Type="TextBox" Key="%%">				
+						</Domain>
+					</Condition>
+					<Condition Value="Like" Show="Begins With">
+						<Domain Type="TextBox" Key="%">		
+						</Domain>
+					</Condition>
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ReportCondition ID="SessionID">
+			<Entity Name="SessionID" Mapsto="[LiveObjects.SessionID]" DataType="String">
+				<Conditions>
+					<Condition Value="=" Show="is">
+						<Domain Type="TextBox" Fixed="True"></Domain>
+					</Condition>
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ResultSet BindTo="LiveObjects">
+			<MasterSet TableName="LiveObjects">
+Select * FROM
+(
+	SELECT [LiveObjects.ObjectID] as [ObjectID],
+	[LiveObjects.ObjectName] as [Object-Class],		
+	[LiveObjects.ObjectSize] *100/ (Select Sum([LiveObjects.ObjectSize]) from LiveObjects where ({SessionID}) ) as 	[Object-Size(%)],
+	[LiveObjects.IsRootObject] as [Root Object],[LiveObjects.SessionID] as [SessionID]		
+	FROM LiveObjects WHERE ({ObjectID}) and ({SessionID}) and ({Object-Class})
+) WHERE ({Object-Size(%)}) 
+</MasterSet>
+		</ResultSet>
+	</SearchCriteria>
+</Schema>

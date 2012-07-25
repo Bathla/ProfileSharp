@@ -1,0 +1,59 @@
+<Schema>
+	<SearchCriteria Value="Analyze Memory by Objects Referencing">
+		<ReportCondition ID="ObjectID">
+			<Entity Name="ObjectID" Mapsto="[ChildObjects.RefObjectID]" DataType="String">
+				<Conditions>
+					<Condition Value="=" Show="is">
+						<Domain Type="TextBox"></Domain>
+					</Condition>
+				</Conditions>
+			</Entity>
+		</ReportCondition>		
+		<ReportCondition ID="Object Size">
+			<Entity Name="Object Size" Mapsto="[ChildObjects.RefObjectSize]" DataType="Number">
+				<Conditions>
+					<Condition Value="&gt;=" Show="greater than or equal to">
+						<Domain Type="TextBox"></Domain>
+					</Condition>	
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ReportCondition ID="Object-Class">
+			<Entity Name="Object-Class" Mapsto="[ChildObjects.RefObjectName]" DataType="String">
+				<Conditions>
+					<Condition Value="=" Show="equals">
+						<Domain Type="TextBox"></Domain>
+					</Condition>
+					<Condition Value="Like" Show="Contains">
+						<Domain Type="TextBox" Key="%%">				
+						</Domain>
+					</Condition>
+					<Condition Value="Like" Show="Begins With">
+						<Domain Type="TextBox" Key="%">		
+						</Domain>
+					</Condition>
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ReportCondition ID="SessionID">
+			<Entity Name="SessionID" Mapsto="[SessionID]" DataType="String">
+				<Conditions>
+					<Condition Value="=" Show="is">
+						<Domain Type="TextBox" Fixed="True"></Domain>
+					</Condition>
+				</Conditions>
+			</Entity>
+		</ReportCondition>
+		<ResultSet BindTo="ChildObjects">
+			<MasterSet TableName="ChildObjects">
+	SELECT distinct [ChildObjects.RefObjectID] as [ObjectID],
+	[ChildObjects.RefObjectName] as [Object-Class],	
+	[ChildObjects.RefObjectSize] as [Object Size(Bytes)],	
+	[ChildObjects.SessionID] as [SessionID] 
+	FROM RefObjects ChildObjects WHERE ({ObjectID}) and ({SessionID}) and 
+	({Object Size}) and({Object-Class}) and ([ChildObjects.RefObjectID] &lt;&gt; [ChildObjects.ParentObjectID])
+</MasterSet>
+		</ResultSet>
+	</SearchCriteria>
+
+</Schema>
